@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import {Header, Container, Content, Textarea, Form, Item, Input, Label, Button } from "native-base";
+import { Text, StyleSheet, View, Clipboard } from 'react-native';
+import {Container, Content, Textarea, Form, Item, Input, Label, Button } from "native-base";
+import { encrypt } from 'react-native-simple-encryption';
 
 export default class Encryptor extends Component {
 
@@ -13,7 +14,15 @@ export default class Encryptor extends Component {
     };
   }
 
-  onPressButton = () => {
+  onPressEncryptButton = () => {
+    var data=encrypt(this.state.message, this.state.Key);
+    this.setState(
+      { encryptedMessage: data }
+    );
+  }
+
+  onPressCopyButton = ()=>{
+    Clipboard.setString(this.state.encryptedMessage);
   }
 
   render() {
@@ -25,12 +34,12 @@ export default class Encryptor extends Component {
             <Item fixedLabel>
               <Label>Key</Label>
               <Input bordered onChange={(event)=> {this.setState({Key: event.nativeEvent.text})}} />
-              <Button light style={styles.ButtonStyle} onPress={this.onPressButton}><Text> Encrypt </Text></Button>
+              <Button light style={styles.ButtonStyle} onPress={this.onPressEncryptButton}><Text> Encrypt </Text></Button>
             </Item>
-            <Textarea rowSpan={5} bordered placeholder="Encrypted message" value={this.state.encryptedMessage} />
-            {/* <View style={styles.PositionCopy}>
-              <Button block light style={styles.CopyButton}><Text> copy </Text></Button>
-            </View> */}
+            <Textarea disabled rowSpan={5} bordered placeholder="Encrypted message" value={this.state.encryptedMessage} />
+            <View style={styles.PositionCopy}>
+              <Button block light style={styles.CopyButton} onPress={this.onPressCopyButton}><Text> copy </Text></Button>
+            </View>
           </Form>
         </Content>
       </Container>
@@ -42,6 +51,7 @@ const styles = StyleSheet.create({
   ButtonStyle: { width: "20%", alignItems: "center" },
   CopyButton:{width: "15%", alignItems:"center"},
   PositionCopy:{
-    justifyContent:"flex-end"
+    flexDirection:"column",
+    alignItems:"stretch"
   }
 })
